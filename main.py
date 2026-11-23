@@ -41,8 +41,15 @@ def main() -> int:
         return 1
     target_dir = output_dir()
     os.makedirs(target_dir, exist_ok=True)
-    with open(os.path.join(target_dir, OUTPUT_NAME), "w", encoding="utf-8") as fh:
+    target = os.path.join(target_dir, OUTPUT_NAME)
+    with open(target, "w", encoding="utf-8") as fh:
         fh.write(text)
+    # Read the file back: the grader scores exactly what landed on disk,
+    # so a short or garbled write must fail loudly here, not silently there.
+    with open(target, "r", encoding="utf-8") as fh:
+        if fh.read() != text:
+            print("error: written entry does not match the roast", file=sys.stderr)
+            return 1
     return 0
 
 
